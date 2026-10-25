@@ -1,10 +1,11 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 import { FaqList, FAQS } from '@/components/site/faq-list'
+import { HeroSlideshow } from '@/components/site/hero-slideshow'
 import { JoinCta } from '@/components/site/join-cta'
 import { LumaEventCards } from '@/components/site/luma-event-cards'
+import { HERO_SLIDES, HERO_SLIDE_INTERVAL_MS } from '@/lib/hero-slides'
 import { getLumaUpcomingEvents } from '@/lib/luma'
 import { LINKS, PRICING } from '@/lib/site'
 import { cn } from '@/lib/utils'
@@ -30,14 +31,7 @@ export default async function HomePage() {
   return (
     <>
       <section className="relative isolate overflow-hidden">
-        <Image
-          src="/images/hero.png"
-          alt="勉強会で講師の話に耳を傾ける経営者たち"
-          fill
-          priority
-          sizes="100vw"
-          className="-z-10 object-cover"
-        />
+        <HeroSlideshow slides={HERO_SLIDES} intervalMs={HERO_SLIDE_INTERVAL_MS} />
         <div className="-z-10 absolute inset-0 bg-background/80 md:bg-gradient-to-r md:from-background md:via-background/90 md:to-background/10" />
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-20 md:py-32">
           <p className="text-sm font-medium tracking-widest text-muted-foreground">
