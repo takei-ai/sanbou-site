@@ -5,6 +5,18 @@ import { supabaseCookieOptions } from './cookie-options'
 const PROTECTED_PREFIXES = ['/member', '/admin']
 
 export async function updateSession(request: NextRequest) {
+  const { pathname, search } = request.nextUrl
+  const isProtected = PROTECTED_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  )
+  const hasAuthCookie = request.cookies.getAll().some((c) => c.name.startsWith('sb-'))
+
+  // Anonymous visitors on public pages have no session to refresh, so skip the
+  // Supabase round trip that otherwise delays every first paint.
+  if (!isProtected && !hasAuthCookie) {
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -30,11 +42,6 @@ export async function updateSession(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-
-  const { pathname, search } = request.nextUrl
-  const isProtected = PROTECTED_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  )
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone()
